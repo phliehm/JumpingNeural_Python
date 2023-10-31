@@ -18,14 +18,15 @@ ai = Player(0,0)
 
 
 # create obstacles 
-objects = []
+obstacles= []
 
 # this creates a list of turtles in a row, it would be more efficient to create 10 turtles, then use
 # the same turtles again when they left the screen
-for i in range(10):
+for i in range(3):
     new_object = Object(800+i*1000+random.randint(0,500),0)
-    new_object.velocityX = -5
-    objects.append(new_object)
+    #new_object = Object(70,0)
+    new_object.velocityX = -5 # -0.1
+    obstacles.append(new_object)
 
 
 
@@ -43,16 +44,18 @@ def end_Game(x,y):
 end = False
 while not end:
     wn.onkeypress(ai.jump,"w")
-    ai.update()
-    ai.draw()
-
     # draw all objects
-    for object in objects:
+    for object in obstacles:
         object.update()
         x = object.pos()[0]
         if x<CANVAS_WIDTH and x>-50:  # only draw objects within the screen
             object.draw()
+    ai.update(obstacles)
+    ai.draw()
     wn.update()
+    if ai.dead:
+        end = True
     time.sleep(0.01)
     wn.onclick(end_Game)    # end the game
 
+wn.exitonclick()
