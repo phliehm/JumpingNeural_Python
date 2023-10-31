@@ -36,7 +36,7 @@ class Object(Turtle):
 
         # reuse this  object when it passed the player, this cannot happen to the player itself, as x for the player doesnt change
         if new_x < -OBJECT_SIZE:
-            new_x = 3000 + random.randint(0,500)
+            new_x = 2800 
         if new_y >= self.baseY:    # check if the y value is still higher than the baseY
             self.setpos((new_x,new_y))
 
@@ -48,7 +48,7 @@ class Object(Turtle):
         
 
 class Player(Object):
-    def __init__(self,x,y,controlType) -> None:
+    def __init__(self,x,y,controlType, neurons) -> None:
         super().__init__(x,y)
         self.accelerationY = -0.2  # acceleration acts down  
         self.color("DarkBlue")
@@ -56,7 +56,7 @@ class Player(Object):
         self.dead = False
         self.Ai = controlType == 'AI'
         if self.Ai:
-            self.brain = NeuralNetwork([1,4,1])
+            self.brain = NeuralNetwork([1,neurons,1])
             for level in self.brain.levels:
                 print(level.weights[0])
 
@@ -88,6 +88,12 @@ class Player(Object):
         if round(y) == self.baseY:
             self.velocityY = 10
 
+    def mutate(self,amount):
+        NeuralNetwork.mutate(self.brain,amount)
+
+    def clear_all(self):
+        self.clear()
+        self.sensor.clear()
             
 class Sensor(Turtle):
     def __init__(self,position):
