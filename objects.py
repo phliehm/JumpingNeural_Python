@@ -1,5 +1,6 @@
 from turtle import Turtle
 import random
+from neuralNetwork import NeuralNetwork
 PEN_WIDTH = 3
 OBJECT_SIZE = 50
 SENSOR_LENGTH = 900
@@ -47,12 +48,17 @@ class Object(Turtle):
         
 
 class Player(Object):
-    def __init__(self,x,y) -> None:
+    def __init__(self,x,y,controlType) -> None:
         super().__init__(x,y)
         self.accelerationY = -0.2  # acceleration acts down  
         self.color("DarkBlue")
         self.sensor = Sensor(self.pos())
         self.dead = False
+        self.Ai = controlType == 'AI'
+        if self.Ai:
+            self.brain = NeuralNetwork([1,4,1])
+            for level in self.brain.levels:
+                print(level.weights[0])
 
     # these methods can be private
     def __update_velocityY(self):
@@ -69,7 +75,13 @@ class Player(Object):
         if self.sensor.detect_collision():
             self.color("gray")
             self.dead = True
-
+        if self.Ai:
+            output = NeuralNetwork.feed_forward([self.sensor.closest/SENSOR_LENGTH], self.brain) # normalise with SENSOR_LENGTH
+            #print(self.brain.levels[1].inputs[0],output)
+            #print(output)
+            if output[0] == 1:
+                self.jump()
+        
     def jump(self):
         _,y = self.pos()
         
@@ -86,12 +98,12 @@ class Sensor(Turtle):
         #self.penup()
         self.hideturtle()
         self.setpos(position)
-        self.closest = 1000
+        self.closest = SENSOR_LENGTH
         self.x = position[0]
         
 
     def draw(self):
-        self.goto((self.closest-PEN_WIDTH,self.pos()[1]))     # only draw the sensor until the closest object
+        self.goto((self.closest+OBJECT_SIZE-PEN_WIDTH,self.pos()[1]))     # only draw the sensor until the closest object
         self.goto((self.x,self.pos()[1]))
 
     def update(self,position):
@@ -99,6 +111,7 @@ class Sensor(Turtle):
         x,y = position
         self.setpos((x,y+OBJECT_SIZE/2))
         self.draw()
+        
 
     def measure(self, objs: [Object]):
         # one cannot simply measure the pixel color with turtle and grabbing images with PIL would be too slow
@@ -115,11 +128,11 @@ class Sensor(Turtle):
     def find_closest(self,objs: [Object]):
         closest = 1000
         for object in objs:
-            object_x = object.pos()[0]
-            if  object_x < closest and object_x > self.x-OBJECT_SIZE: # object must be in front of the player, find closest
+            object_x = object.pos()[0]-OBJECT_SIZE
+            if  object_x < closest and object_x > self.x-2*OBJECT_SIZE: # object must be in front of the player, find closest
                 closest = object_x
         self.closest = closest
 
     def detect_collision(self):
-        if self.closest < self.x+OBJECT_SIZE and self.pos()[1]-OBJECT_SIZE/2 < OBJECT_SIZE:
+        if self.closest < self.x and self.pos()[1]-OBJECT_SIZE/2 < OBJECT_SIZE: # bug?
             return True

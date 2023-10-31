@@ -14,7 +14,7 @@ wn.title("Rectangle Drawing")
 wn.bgcolor("white")
 
 # Create a turtle object
-ai = Player(0,0)
+ai = Player(0,0,"AI")
 
 
 # create obstacles 
@@ -23,8 +23,8 @@ obstacles= []
 # this creates a list of turtles in a row, it would be more efficient to create 10 turtles, then use
 # the same turtles again when they left the screen
 for i in range(3):
-    new_object = Object(800+i*1000+random.randint(0,500),0)
-    #new_object = Object(70,0)
+    new_object = Object(800+i*600+random.randint(0,500),0)
+    #new_object = Object(270,0)
     new_object.velocityX = -5 # -0.1
     obstacles.append(new_object)
 
@@ -55,7 +55,7 @@ while not end:
     wn.update()
     if ai.dead:
         end = True
-    time.sleep(0.01)
+    time.sleep(0.001)
     wn.onclick(end_Game)    # end the game
 
 wn.exitonclick()
