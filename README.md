@@ -1,13 +1,6 @@
 # easy python program to make an AI player jump over obstacles
 
-- turtle
+- simple neural network, actually only needs 3 layers and one neuron each
+--> could be made more complex e.g. not only measuring distance but also speed of
+objects coming towards the player
 
-
-## Steps:
-
-### 1. Rectangle which can jump when a button is pressed 
-- implement also gravity
-- figure should simply stop at a certain height (no collision needed)
-
-### 2. Blocks coming towards the player
-- random but minimum distance from eachother
