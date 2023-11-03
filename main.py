@@ -19,7 +19,7 @@ CANVAS_HEIGHT = 500
 CANVAS_WIDTH = 1000
 NUMBER_OF_AIS = 10          # How many AIs at the same time per generation
 NUMBER_OF_OBSTACLES = 10    # how many obstacles (but they will come back after the passed the player/AI)#
-MIN_OBSTACLE_DISTANCE = 300 # obstacles need some minimum distance (depends on how fast the jump is)
+MIN_OBSTACLE_DISTANCE = 500 # obstacles need some minimum distance (depends on how fast the jump is)
 NUMBER_OF_NEURONS = 2       # how many neurons in the middle layer 
 MUTATION_STRENGTH = 0.2     # mutation strength (1 stronger mutation, 0 no mutation)
 
