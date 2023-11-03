@@ -6,8 +6,8 @@ import random
 CANVAS_HEIGHT = 500
 CANVAS_WIDTH = 1000
 
-BASE_LINE_Y = 20 # position of the ground
-PLAYER_X = 100 
+BASE_LINE_Y = 0 # position of the ground
+PLAYER_X = 0 
 
 end = False
 
@@ -16,7 +16,7 @@ end = False
 # Create a turtle screen
 wn = turtle.Screen()
 wn.setup(CANVAS_WIDTH,CANVAS_HEIGHT)
-wn.setworldcoordinates(0,0,CANVAS_WIDTH,CANVAS_HEIGHT)
+wn.setworldcoordinates(-20,-20,CANVAS_WIDTH,CANVAS_HEIGHT)
 wn.title("Rectangle Drawing")
 wn.bgcolor("white")
 
