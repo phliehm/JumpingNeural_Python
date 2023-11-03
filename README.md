@@ -11,3 +11,8 @@
 
 ### 2. Blocks coming towards the player
 - random but minimum distance from eachother
+
+
+
+
+
