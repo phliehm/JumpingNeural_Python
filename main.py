@@ -17,11 +17,11 @@ CANVAS_WIDTH = 1000
 
 CANVAS_HEIGHT = 500
 CANVAS_WIDTH = 1000
-NUMBER_OF_AIS = 10          # How many AIs at the same time per generation
+NUMBER_OF_AIS = 20          # How many AIs at the same time per generation
 NUMBER_OF_OBSTACLES = 10    # how many obstacles (but they will come back after the passed the player/AI)#
-MIN_OBSTACLE_DISTANCE = 300 # obstacles need some minimum distance (depends on how fast the jump is)
+MIN_OBSTACLE_DISTANCE = 500 # obstacles need some minimum distance (depends on how fast the jump is)
 NUMBER_OF_NEURONS = 2       # how many neurons in the middle layer 
-MUTATION_STRENGTH = 0.2     # mutation strength (1 stronger mutation, 0 no mutation)
+MUTATION_STRENGTH = 0.1     # mutation strength (1 stronger mutation, 0 no mutation)
 
 PLAYER_X = 20
 BASELINE_Y = 20
@@ -137,6 +137,7 @@ enemies = []
 
 def main():
     global NUMBER_OF_AIS
+    global MUTATION_STRENGTH
     start_simulation(artificial_players,enemies)
 
 
@@ -151,7 +152,22 @@ def main():
         
 
         if enemies_gone == NUMBER_OF_OBSTACLES:
-            set_all_enemies_position(enemies)
+            MUTATION_STRENGTH = 0.0001
+                # start next generation if only 1 AI remains
+            if len(alive) <= 1:
+                if len(alive) ==1:
+                    print("ONE ALIVE!!!")
+                    # reset game and make babies
+                    reset_simulation(artificial_players[alive[0]],True,artificial_players,enemies)
+                    # reset the list of indicator for living AIs
+
+                # in case no AI is left, try using a saved one as parent
+                if len(alive) == 0:  
+                    try:  
+                        reset_simulation(parentAI,True,artificial_players,enemies)
+                    except: # if no AI could be saved, start new
+                        reset_simulation(first_AI,False,artificial_players,enemies)
+                alive=[]
         # update positions and draw all objects
         enemies_gone = 0
         for enemy in enemies:
@@ -183,13 +199,15 @@ def main():
         # start next generation if only 1 AI remains
         if len(alive) <= 1:
             if len(alive) ==1:
+                MUTATION_STRENGTH = 0.01
                 print("ONE ALIVE!!!")
                 # reset game and make babies
                 reset_simulation(artificial_players[alive[0]],True,artificial_players,enemies)
                 # reset the list of indicator for living AIs
 
             # in case no AI is left, try using a saved one as parent
-            if len(alive) == 0:  
+            if len(alive) == 0:
+                MUTATION_STRENGTH = 0.1  
                 try:  
                     reset_simulation(parentAI,True,artificial_players,enemies)
                 except: # if no AI could be saved, start new
