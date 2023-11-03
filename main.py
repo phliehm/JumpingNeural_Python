@@ -153,6 +153,15 @@ def main():
 
         if enemies_gone == NUMBER_OF_OBSTACLES:
             MUTATION_STRENGTH = 0.0001
+            counter = 0
+            for i, ai in enumerate(artificial_players):
+                if not ai.dead:
+                    ai.setposition((50*counter,200))
+                    ai.clear_sensor()
+                    counter+=1
+                
+            wn.update()
+            time.sleep(2)
                 # start next generation if only 1 AI remains
             if len(alive) <= 1:
                 if len(alive) ==1:
@@ -167,6 +176,7 @@ def main():
                         reset_simulation(parentAI,True,artificial_players,enemies)
                     except: # if no AI could be saved, start new
                         reset_simulation(first_AI,False,artificial_players,enemies)
+            
                 alive=[]
         # update positions and draw all objects
         enemies_gone = 0
