@@ -7,6 +7,7 @@ OBJECT_SIZE = OBJECT_STRETCH*20 # 40px
 JUMP_VELOCITY_Y = 10
 CANVAS_WIDTH = 1000
 SENSOR_LENGTH = CANVAS_WIDTH
+ACCELERATION_Y = -0.2
 
 class Object(Turtle):
     def __init__(self,x,y) -> None:
@@ -50,21 +51,25 @@ class Object(Turtle):
         self.clear()
         self._update_position()
         # self.update_velocity()
-
+    def set_position(self,x,y):
+        self.x = x
+        self.y = y
+        self.setposition((x,y))
+        
         
 
 class Player(Object):
     def __init__(self,x,y,controlType, neurons) -> None:
         super().__init__(x,y)
-        self.accelerationY = -0.2  # acceleration acts down  
+        self.accelerationY = ACCELERATION_Y  # acceleration acts down  
         self.color("DarkBlue")
         self.sensor = Sensor(self.pos())
         self.dead = False
         self.Ai = controlType == 'AI'
         if self.Ai:
             self.brain = NeuralNetwork([1,neurons,1])
-            for level in self.brain.levels:
-                print(level.weights[0])
+            #for level in self.brain.levels:
+                #print(level.weights[0])
 
     def update(self, objs: [Object]):
         self.clear()
@@ -76,25 +81,43 @@ class Player(Object):
             self.color("gray")
             self.dead = True
         if self.Ai:
-            output = NeuralNetwork.feed_forward([self.sensor.closest/SENSOR_LENGTH], self.brain) # normalise with SENSOR_LENGTH
-            #print(self.brain.levels[1].inputs[0],output)
-            #print(output)
+            # input values are normalised with SENSOR_LENGTH to keep values between 0...1
+            output = NeuralNetwork.feed_forward(self.brain,[self.sensor.closest/SENSOR_LENGTH]) 
             if output[0] == 1:
                 self.jump()
         
     def jump(self):
-        _,y = self.pos()
-        
-        if round(y) == self.baseY:
-            self.velocityY = 10
+        if round(self.y) == self.baseY:
+            self.velocityY = JUMP_VELOCITY_Y
 
     def mutate(self,amount):
         NeuralNetwork.mutate(self.brain,amount)
 
-    def clear_all(self):
-        self.clear()
+    def clear_sensor(self):
         self.sensor.clear()
 
+
+    def get_brain_data(self):
+        return self.brain.get_brain_data() 
+    
+    def set_brain_data(self,brain_data):
+        self.brain.set_brain_data(brain_data)
+
+    
+    def reset_player(self):
+        self.setposition(0,0)
+        self.clear()
+        self.brain.randomize()
+        self.accelerationY = ACCELERATION_Y
+        self.dead = False
+        self.velocityY = 0
+        self.showturtle()
+        
+    def kill(self):
+        self.accelerationY=0
+        self.hideturtle()
+        self.clear()
+        self.clear_sensor()
             
 class Sensor(Turtle):
     def __init__(self,position):
