@@ -21,7 +21,7 @@ NUMBER_OF_AIS = 20          # How many AIs at the same time per generation
 NUMBER_OF_OBSTACLES = 10    # how many obstacles (but they will come back after the passed the player/AI)#
 MIN_OBSTACLE_DISTANCE = 400 # obstacles need some minimum distance (depends on how fast the jump is)
 NUMBER_OF_NEURONS = 2       # how many neurons in the middle layer 
-MUTATION_STRENGTH = 0.1     # mutation strength (1 stronger mutation, 0 no mutation)
+MUTATION_STRENGTH = 0.2    # mutation strength (1 stronger mutation, 0 no mutation)
 
 PLAYER_X = 20
 BASELINE_Y = 20
@@ -104,6 +104,7 @@ def reset_simulation(parent_ai,makeBabies,ais,enemies):
 
     # save the data of the best brain
     best_brain_data = copy.deepcopy(parent_ai.get_brain_data())
+    print("In reset: ",best_brain_data["Level 1"]["weights"][0])
     """     # Specify the file path where you want to save the data
     file_path = 'neural_network_data.json'
     with open(file_path, 'w') as json_file:
@@ -118,12 +119,13 @@ def reset_simulation(parent_ai,makeBabies,ais,enemies):
         count = 0
         for ai in ais:
             ai.set_brain_data(best_brain_data)
-            print(ai.get_brain_data()["Level 0"])
+            #print(ai.get_brain_data()["Level 0"])
             ai.mutate(MUTATION_STRENGTH)
-            print(ai.get_brain_data()["Level 0"])
+            #print(ai.get_brain_data()["Level 0"])
             
 
     else:
+        print("this should not happen!!")
         reset_AIs(ais)
 
 
@@ -141,33 +143,31 @@ def main():
     start_simulation(artificial_players,enemies)
 
 
-    print(artificial_players[0].get_brain_data())
+    #print(artificial_players[0].get_brain_data())
     wn.listen() # listen to key input events
     wn.onclick(end_game_handler)    
     enemies_gone = 0
     # game loop
     while not end_game:
-        # list of indicies of AIs which are alive
-        alive = []
-        
-
+      
         if enemies_gone == NUMBER_OF_OBSTACLES:
-            MUTATION_STRENGTH = 0.0001
+            MUTATION_STRENGTH = 0.001
                 # start next generation if only 1 AI remains
-            if len(alive) <= 1:
-                if len(alive) ==1:
-                    print("ONE ALIVE!!!")
-                    # reset game and make babies
-                    reset_simulation(artificial_players[alive[0]],True,artificial_players,enemies)
-                    # reset the list of indicator for living AIs
+            if len(alive) >= 1:
 
-                # in case no AI is left, try using a saved one as parent
-                if len(alive) == 0:  
-                    try:  
-                        reset_simulation(parentAI,True,artificial_players,enemies)
-                    except: # if no AI could be saved, start new
-                        reset_simulation(first_AI,False,artificial_players,enemies)
-                alive=[]
+                print("ONE ALIVE!!!")
+                # reset game and make babies
+                reset_simulation(artificial_players[alive[0]],True,artificial_players,enemies)
+                # reset the list of indicator for living AIs
+            MUTATION_STRENGTH = 0.2
+            # in case no AI is left, try using a saved one as parent
+            if len(alive) == 0:  
+                try:  
+                    reset_simulation(parentAI,True,artificial_players,enemies)
+                except: # if no AI could be saved, start new
+                    reset_simulation(first_AI,False,artificial_players,enemies)
+            del(parentAI)
+        alive=[]
         # update positions and draw all objects
         enemies_gone = 0
         for enemy in enemies:
@@ -196,23 +196,29 @@ def main():
         wn.update() # update screen
         #time.sleep(0.001)
         
-        # start next generation if only 1 AI remains
+        
+        #start next generation if only 1 AI remains
         if len(alive) <= 1:
+           
             if len(alive) ==1:
                 MUTATION_STRENGTH = 0.01
                 print("ONE ALIVE!!!")
                 # reset game and make babies
                 reset_simulation(artificial_players[alive[0]],True,artificial_players,enemies)
                 # reset the list of indicator for living AIs
-
+            
             # in case no AI is left, try using a saved one as parent
             if len(alive) == 0:
-                MUTATION_STRENGTH = 0.1  
+                MUTATION_STRENGTH = 0.2
+                print("CASE 1") 
                 try:  
-                    reset_simulation(parentAI,True,artificial_players,enemies)
+                    print("TRYING")
+                    reset_simulation(parentAI,True,artificial_players,enemies) # change to parent AI!!
                 except: # if no AI could be saved, start new
+                    print("EXCEPTION")
                     reset_simulation(first_AI,False,artificial_players,enemies)
             alive=[]
+        
 
         # this controls how fast the game runs, if its not anyway slower cause of bottlenecks
         time.sleep(0.001)
@@ -229,12 +235,12 @@ def main():
     # Specify the file path where you want to save the data
     file_path = 'neural_network_data.json'
     with open(file_path, 'w') as json_file:
-        print(alive[0])
-        json.dump(artificial_players[alive[0]].get_brain_data(), json_file, indent=4)
+        #print(alive[0])
+        json.dump(artificial_players[0].get_brain_data(), json_file, indent=4)
 
 
 
 
 if __name__ == "__main__":
     main()
-
+ 

@@ -88,7 +88,6 @@ class NeuralNetwork:
             level.biases = copy.deepcopy(brain_data[f"Level {i}"]["biases"])
 
     def randomize(self):
-
         for level in self.levels:
             level.randomize()
 
